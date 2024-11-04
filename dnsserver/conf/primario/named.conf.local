@@ -1,0 +1,41 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+
+key "chavesecreta" {
+	algorithm hmac-sha256;
+	secret "UHJVLtUumRQSP+asa1ewNiNdJH9fySnYOtRUvhfgrH4=";
+};
+
+acl "rndc-users" {            
+    192.168.20.100;
+};
+
+controls {
+    inet 127.0.0.1 allow {localhost;};
+    inet * port 7766 allow {"rndc-users";} keys {"chavesecreta";};
+};
+
+zone "starwars.lan"{
+    type master;
+    file "/etc/bind/db.starwars.lan";
+    allow-transfer { key "chavesecreta";};
+    allow-update {key "chavesecreta";};
+};
+
+zone "20.168.192.in-addr.arpa"{
+    type master;
+    file "/etc/bind/db.20.168.192";
+    allow-transfer { key "chavesecreta";};
+    allow-update {key "chavesecreta";};
+};
+zone "galaxia.lan" {
+    type master;
+    file "/etc/bind/zones/db.galaxia.lan";
+    allow-update { key "rndc-key"; };
+};
